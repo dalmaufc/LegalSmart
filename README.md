@@ -1,0 +1,2 @@
+# LegalSmart
+LegalSmart Streamlit app
