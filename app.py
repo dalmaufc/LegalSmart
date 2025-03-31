@@ -8,7 +8,7 @@ import io
 from fpdf import FPDF
 
 # === CONFIG ===
-GENAI_API_KEY = "YOUR_GEMINI_API_KEY"
+GENAI_API_KEY = "AIzaSyBtsHW342EY5azAbdORiLgBN8Bp7Ul8xIA"
 INDEX_PATH = "index.faiss"
 METADATA_PATH = "constitution_metadata.pkl"
 EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-base"
