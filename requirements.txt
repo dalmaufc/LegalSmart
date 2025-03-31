@@ -3,3 +3,4 @@ faiss-cpu
 sentence-transformers
 google-generativeai
 fpdf
+langchain-community
