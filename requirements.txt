@@ -2,3 +2,4 @@ streamlit
 faiss-cpu
 sentence-transformers
 google-generativeai
+fpdf
