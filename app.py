@@ -16,7 +16,7 @@ EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-base"
 # === SETUP ===
 genai.configure(api_key=GENAI_API_KEY)
 model = genai.GenerativeModel("gemini-pro")
-embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 index = faiss.read_index(INDEX_PATH)
 
 with open(METADATA_PATH, "rb") as f:
