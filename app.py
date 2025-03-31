@@ -9,7 +9,7 @@ import numpy as np
 GENAI_API_KEY = "AIzaSyBtsHW342EY5azAbdORiLgBN8Bp7Ul8xIA"
 INDEX_PATH = "constitution_vectorstore/index.faiss"
 METADATA_PATH = "constitution_vectorstore/index.pkl"
-EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-base"
+EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 
 # === SETUP ===
 genai.configure(api_key=GENAI_API_KEY)
