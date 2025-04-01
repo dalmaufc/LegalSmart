@@ -54,13 +54,6 @@ translations = {
     }
 }
 
-# === SELECTOR DE IDIOMA ===
-lang = st.selectbox("🌐 Idioma / Language / Runashimi:", ["Español", "English", "Kichwa"])
-t = translations[lang]
-
-# === TÍTULO ADAPTADO AL IDIOMA ===
-st.title(t["title"])
-
 # === INPUT CLAVE API ===
 user_api_key = st.text_input("🔐 API key de Gemini / Gemini API key:", type="password")
 
@@ -185,3 +178,10 @@ PREGUNTA: {query}
         st.error(f"❌ Error: {str(e)}")
 else:
     st.warning(t["api_warning"])
+
+# === SELECTOR DE IDIOMA ===
+lang = st.selectbox("🌐 Idioma / Language / Runashimi:", ["Español", "English", "Kichwa"])
+t = translations[lang]
+
+# === TÍTULO ADAPTADO AL IDIOMA ===
+st.title(t["title"])
