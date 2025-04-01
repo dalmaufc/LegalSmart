@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pickle
 import faiss
@@ -8,10 +7,13 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import google.generativeai as genai
 import json
 
+# === CONFIGURAR PÁGINA ANTES DE NADA ===
+st.set_page_config(page_title="🧠 LegalSmart", layout="centered")
+
 # === CARGAR ARTÍCULOS COMPLETOS DESDE JSON ===
 with open("ecuadorian_constitution_articles_multilabel.json", "r", encoding="utf-8") as f:
     full_articles = json.load(f)
-
+    
 # === TRADUCCIONES UI ===
 translations = {
     "Español": {
@@ -55,6 +57,9 @@ translations = {
 # === SELECTOR DE IDIOMA ===
 lang = st.selectbox("🌐 Idioma / Language / Runashimi:", ["Español", "English", "Kichwa"])
 t = translations[lang]
+
+# === TÍTULO ADAPTADO AL IDIOMA ===
+st.title(t["title"])
 
 # === STREAMLIT UI ===
 st.set_page_config(page_title=t["title"], layout="centered")
