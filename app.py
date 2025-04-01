@@ -42,22 +42,38 @@ if user_api_key:
 
         def ask_constitution(query, domain_filter=None):
             relevant_docs = search_constitution(query, domain_filter)
+
+            if not relevant_docs:
+                return (
+                    "No se encontró información constitucional relevante para responder esta pregunta de forma precisa.",
+                    []
+                )
+
             context = "\n\n".join([
                 f"Artículo: {doc.metadata.get('article_number', 'N/A')}\nDominio: {', '.join(doc.metadata.get('domains', []))}\nContenido: {doc.page_content}"
                 for doc in relevant_docs
             ])
+
+            # Verificación adicional por seguridad
+            if len(context.strip()) < 100:
+                return (
+                    "La información encontrada no es suficiente para dar una respuesta legalmente precisa. Por favor intenta reformular tu pregunta.",
+                    relevant_docs
+                )
+
             prompt = f"""
-Eres un asistente legal entrenado en la Constitución de Ecuador.
+        Eres un asistente legal entrenado en la Constitución de Ecuador.
 
-Usa los siguientes extractos constitucionales como contexto para responder legalmente esta pregunta:
+        Usa los siguientes extractos constitucionales como contexto para responder legalmente esta pregunta:
 
-{context}
+        {context}
 
-Pregunta del usuario:
-{query}
+        Pregunta del usuario:
+        {query}
 
-Por favor responde en español claro y legalmente preciso.
-"""
+        Por favor responde en español claro y legalmente preciso.
+        """
+
             response = model.generate_content(prompt)
             return response.text, relevant_docs
 
