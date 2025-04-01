@@ -8,9 +8,6 @@ import google.generativeai as genai
 
 
 
-import numpy as np
-sample_embedding = embedding_model.embed_query("test")
-print(f"Embedding dim: {np.array(sample_embedding).shape}")
 
 # === CONFIG ===
 GENAI_API_KEY = "AIzaSyBtsHW342EY5azAbdORiLgBN8Bp7Ul8xIA"
@@ -82,4 +79,10 @@ if st.button("Consultar") and query.strip():
             st.write(doc.page_content)
 else:
     st.info("Escribe una pregunta legal y selecciona el dominio para comenzar.")
+
+
+
+import numpy as np
+sample_embedding = embedding_model.embed_query("test")
+print(f"Embedding dim: {np.array(sample_embedding).shape}")
 
