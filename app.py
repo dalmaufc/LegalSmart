@@ -42,24 +42,57 @@ if user_api_key:
 
         def ask_constitution(query, domain_filter=None):
             relevant_docs = search_constitution(query, domain_filter)
+
+            # Si no se encontró contexto relevante
+            if not relevant_docs:
+                return (
+                    "No se encontró información constitucional relevante para responder esta pregunta de forma precisa.",
+                    []
+                )
+
+            # Construir el contexto a partir de los fragmentos encontrados
             context = "\n\n".join([
                 f"Artículo: {doc.metadata.get('article_number', 'N/A')}\nDominio: {', '.join(doc.metadata.get('domains', []))}\nContenido: {doc.page_content}"
                 for doc in relevant_docs
             ])
+
+            # Validar si el contexto es muy limitado
+            if len(context.strip()) < 100:
+                return (
+                    "La información encontrada no es suficiente para dar una respuesta legalmente precisa. Por favor intenta reformular tu pregunta.",
+                    relevant_docs
+                )
+
+            # Prompt con ejemplos legales (few-shot prompting)
             prompt = f"""
-Eres un asistente legal entrenado en la Constitución de Ecuador.
+        Eres un asistente legal entrenado en la Constitución del Ecuador. Responde de manera legal, clara y precisa, usando los artículos constitucionales como base.
 
-Usa los siguientes extractos constitucionales como contexto para responder legalmente esta pregunta:
+        Ejemplos:
 
-{context}
+        PREGUNTA: ¿Qué derechos tienen los niños en Ecuador?
+        RESPUESTA:
+        Según el Artículo 45 de la Constitución del Ecuador, los niños, niñas y adolescentes tienen derecho a la integridad física y psíquica; a su identidad, nombre y ciudadanía; a la salud integral y nutrición; a la educación y cultura, al deporte y recreación; a la seguridad social; a tener una familia y disfrutar de la convivencia familiar y comunitaria; a la participación social; al respeto de su libertad y dignidad; y a ser consultados en los asuntos que les conciernen.
 
-Pregunta del usuario:
-{query}
+        PREGUNTA: ¿Puedo ser detenido sin orden judicial en Ecuador?
+        RESPUESTA:
+        El Artículo 77 establece que ninguna persona puede ser privada de libertad sino por orden de juez competente, excepto en caso de flagrancia. Toda persona detenida debe ser informada inmediatamente de sus derechos y de los motivos de su detención, y tiene derecho a comunicarse con su familia y abogado.
 
-Por favor responde en español claro y legalmente preciso.
-"""
+        PREGUNTA: ¿Qué derechos tienen los pueblos indígenas sobre sus territorios?
+        RESPUESTA:
+        El Artículo 57 reconoce que los pueblos indígenas tienen derecho a conservar la posesión ancestral de sus tierras y territorios, a no ser desplazados, y a participar en el uso, usufructo, administración y conservación de los recursos naturales renovables existentes en ellos. Además, deben ser consultados antes de cualquier medida legislativa o administrativa que pueda afectarles.
+
+        ---
+
+        Ahora responde a esta nueva pregunta con base en los siguientes extractos constitucionales:
+
+        {context}
+
+        PREGUNTA: {query}
+        """
+
+            # Llamar a Gemini con el prompt
             response = model.generate_content(prompt)
-            return response.text, relevant_docs
+            return response.text.strip(), relevant_docs
 
         # === INTERFAZ DE USUARIO ===
         selected_domain = st.selectbox("Selecciona el dominio legal:", [
