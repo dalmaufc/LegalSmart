@@ -61,8 +61,8 @@ st.set_page_config(page_title="Asistente Legal Ecuador", layout="centered")
 st.title("🧠 Asistente Legal Constitucional 🇪🇨")
 
 selected_domain = st.selectbox("Selecciona el dominio legal:", [
-    "Todos", "Fundamental Rights", "Labor Law", "Environmental Law",
-    "Business & Economy", "Justice & Legal Process", "Digital Rights & Privacy"
+    "Todos", "Derechos Fundamentales", "Derecho Laboral", "Derecho Ambiental",
+    "Negocios y Economía", "Justicia y Proceso Legal", "Derechos Digitales y Privacidad"
 ])
 
 query = st.text_area("Escribe tu pregunta legal:")
