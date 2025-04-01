@@ -1,49 +1,42 @@
 import streamlit as st
-import google.generativeai as genai
 import pickle
 import faiss
 from sentence_transformers import SentenceTransformer
-import numpy as np
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+import google.generativeai as genai
 
 # === CONFIG ===
 GENAI_API_KEY = "AIzaSyBtsHW342EY5azAbdORiLgBN8Bp7Ul8xIA"
-INDEX_PATH = "constitution_vectorstore/index.faiss"
-METADATA_PATH = "constitution_vectorstore/index.pkl"
-EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
+VECTORSTORE_DIR = "constitution_vectorstore"
 
 # === SETUP ===
 genai.configure(api_key=GENAI_API_KEY)
 model = genai.GenerativeModel("models/gemini-1.5-flash", generation_config={"temperature": 0.9})
-embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
-index = faiss.read_index(INDEX_PATH)
 
-with open(METADATA_PATH, "rb") as f:
-    metadata = pickle.load(f)
+embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
+vectorstore = FAISS.load_local(
+    VECTORSTORE_DIR,
+    embedding_model,
+    allow_dangerous_deserialization=True
+)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
-# === FAISS SEARCH FUNCTION ===
-def search_faiss(query, top_k=3, domain_filter=None):
-    query_embedding = embedding_model.encode([query])
-    distances, indices = index.search(query_embedding, top_k * 2)
-    results = []
-    for i in indices[0]:
-        if i < len(metadata):
-            doc = metadata[i]
-            if domain_filter and domain_filter != "Todos":
-                if domain_filter in doc["metadata"]["domains"]:
-                    results.append(doc)
-            else:
-                results.append(doc)
-        if len(results) >= top_k:
-            break
-    return results
+# === RETRIEVAL FUNCTION ===
+def search_constitution(query, domain_filter=None):
+    docs = retriever.get_relevant_documents(query)
+    if domain_filter and domain_filter != "Todos":
+        docs = [doc for doc in docs if domain_filter in doc.metadata.get("domains", [])]
+    return docs
 
-# === GEMINI RAG CHAIN ===
+# === RAG-STYLE Q&A ===
 def ask_constitution(query, domain_filter=None):
-    relevant_chunks = search_faiss(query, top_k=3, domain_filter=domain_filter)
+    relevant_docs = search_constitution(query, domain_filter)
     context = "\n\n".join([
-        f"Artículo: {doc['metadata']['article_number']}\nDominio: {', '.join(doc['metadata']['domains'])}\nContenido: {doc['page_content']}"
-        for doc in relevant_chunks
+        f"Artículo: {doc.metadata.get('article_number', 'N/A')}\nDominio: {', '.join(doc.metadata.get('domains', []))}\nContenido: {doc.page_content}"
+        for doc in relevant_docs
     ])
+
     prompt = f"""
 Eres un asistente legal entrenado en la Constitución de Ecuador.
 
@@ -56,8 +49,9 @@ Pregunta del usuario:
 
 Por favor responde en español claro y legalmente preciso.
 """
+
     response = model.generate_content(prompt)
-    return response.text
+    return response.text, relevant_docs
 
 # === STREAMLIT UI ===
 st.set_page_config(page_title="Asistente Legal Ecuador", layout="centered")
@@ -71,9 +65,15 @@ selected_domain = st.selectbox("Selecciona el dominio legal:", [
 query = st.text_area("Escribe tu pregunta legal:")
 
 if st.button("Consultar") and query.strip():
-    with st.spinner("Analizando la Constitución..."):
-        response = ask_constitution(query, domain_filter=selected_domain)
+    with st.spinner("Consultando la Constitución..."):
+        answer, sources = ask_constitution(query, selected_domain)
         st.markdown("### 🧾 Respuesta:")
-        st.write(response)
+        st.write(answer)
+
+        st.markdown("### 📚 Artículos utilizados:")
+        for doc in sources:
+            st.markdown(f"**{doc.metadata['article_number']}** ({', '.join(doc.metadata['domains'])})")
+            st.write(doc.page_content)
 else:
     st.info("Escribe una pregunta legal y selecciona el dominio para comenzar.")
+
