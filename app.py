@@ -6,6 +6,12 @@ from langchain.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 import google.generativeai as genai
 
+
+
+import numpy as np
+sample_embedding = embedding_model.embed_query("test")
+print(f"Embedding dim: {np.array(sample_embedding).shape}")
+
 # === CONFIG ===
 GENAI_API_KEY = "AIzaSyBtsHW342EY5azAbdORiLgBN8Bp7Ul8xIA"
 VECTORSTORE_DIR = "constitution_vectorstore"
