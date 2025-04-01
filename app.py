@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pickle
 import faiss
@@ -40,57 +41,62 @@ if user_api_key:
                 docs = [doc for doc in docs if domain_filter in doc.metadata.get("domains", [])]
             return docs
 
-        def ask_constitution(query, domain_filter=None):
+        def ask_constitution(query, domain_filter=None, reading_level="Intermedio (estilo ciudadano)"):
             relevant_docs = search_constitution(query, domain_filter)
 
-            # Si no se encontró contexto relevante
             if not relevant_docs:
                 return (
                     "No se encontró información constitucional relevante para responder esta pregunta de forma precisa.",
                     []
                 )
 
-            # Construir el contexto a partir de los fragmentos encontrados
             context = "\n\n".join([
                 f"Artículo: {doc.metadata.get('article_number', 'N/A')}\nDominio: {', '.join(doc.metadata.get('domains', []))}\nContenido: {doc.page_content}"
                 for doc in relevant_docs
             ])
 
-            # Validar si el contexto es muy limitado
             if len(context.strip()) < 100:
                 return (
                     "La información encontrada no es suficiente para dar una respuesta legalmente precisa. Por favor intenta reformular tu pregunta.",
                     relevant_docs
                 )
 
-            # Prompt con ejemplos legales (few-shot prompting)
+            tone_instruction = {
+                "Básico (lenguaje sencillo)": "Responde como si hablaras con un estudiante de colegio o secundaria. Usa palabras simples, sin tecnicismos.",
+                "Intermedio (estilo ciudadano)": "Responde como si explicaras a un ciudadano común. Sé claro, directo y evita jerga legal innecesaria.",
+                "Avanzado (técnico jurídico)": "Responde con precisión jurídica, usando términos legales adecuados como si fueras un abogado hablando con otro abogado."
+            }
+
             prompt = f"""
-        Eres un asistente legal entrenado en la Constitución del Ecuador. Responde de manera legal, clara y precisa, usando los artículos constitucionales como base.
+Eres un asistente legal entrenado en la Constitución del Ecuador.
 
-        Ejemplos:
+{tone_instruction[reading_level]}
 
-        PREGUNTA: ¿Qué derechos tienen los niños en Ecuador?
-        RESPUESTA:
-        Según el Artículo 45 de la Constitución del Ecuador, los niños, niñas y adolescentes tienen derecho a la integridad física y psíquica; a su identidad, nombre y ciudadanía; a la salud integral y nutrición; a la educación y cultura, al deporte y recreación; a la seguridad social; a tener una familia y disfrutar de la convivencia familiar y comunitaria; a la participación social; al respeto de su libertad y dignidad; y a ser consultados en los asuntos que les conciernen.
+Ejemplos:
 
-        PREGUNTA: ¿Puedo ser detenido sin orden judicial en Ecuador?
-        RESPUESTA:
-        El Artículo 77 establece que ninguna persona puede ser privada de libertad sino por orden de juez competente, excepto en caso de flagrancia. Toda persona detenida debe ser informada inmediatamente de sus derechos y de los motivos de su detención, y tiene derecho a comunicarse con su familia y abogado.
+PREGUNTA: ¿Qué derechos tienen los niños en Ecuador?
+RESPUESTA:
+Según el Artículo 45 de la Constitución del Ecuador, los niños, niñas y adolescentes tienen derecho a la integridad física y psíquica; a su identidad, nombre y ciudadanía; a la salud integral y nutrición; a la educación y cultura, al deporte y recreación; a la seguridad social; a tener una familia y disfrutar de la convivencia familiar y comunitaria; a la participación social; al respeto de su libertad y dignidad; y a ser consultados en los asuntos que les conciernen.
 
-        PREGUNTA: ¿Qué derechos tienen los pueblos indígenas sobre sus territorios?
-        RESPUESTA:
-        El Artículo 57 reconoce que los pueblos indígenas tienen derecho a conservar la posesión ancestral de sus tierras y territorios, a no ser desplazados, y a participar en el uso, usufructo, administración y conservación de los recursos naturales renovables existentes en ellos. Además, deben ser consultados antes de cualquier medida legislativa o administrativa que pueda afectarles.
+PREGUNTA: ¿Puedo ser detenido sin orden judicial en Ecuador?
+RESPUESTA:
+El Artículo 77 establece que ninguna persona puede ser privada de libertad sino por orden de juez competente, excepto en caso de flagrancia. Toda persona detenida debe ser informada inmediatamente de sus derechos y de los motivos de su detención, y tiene derecho a comunicarse con su familia y abogado.
 
-        ---
+PREGUNTA: ¿Qué derechos tienen los pueblos indígenas sobre sus territorios?
+RESPUESTA:
+El Artículo 57 reconoce que los pueblos indígenas tienen derecho a conservar la posesión ancestral de sus tierras y territorios, a no ser desplazados, y a participar en el uso, usufructo, administración y conservación de los recursos naturales renovables existentes en ellos. Además, deben ser consultados antes de cualquier medida legislativa o administrativa que pueda afectarles.
 
-        Ahora responde a esta nueva pregunta con base en los siguientes extractos constitucionales:
+---
 
-        {context}
+---
 
-        PREGUNTA: {query}
-        """
+Ahora responde a esta nueva pregunta con base en los siguientes extractos constitucionales:
 
-            # Llamar a Gemini con el prompt
+{context}
+
+PREGUNTA: {query}
+"""
+
             response = model.generate_content(prompt)
             return response.text.strip(), relevant_docs
 
@@ -101,9 +107,15 @@ if user_api_key:
         ])
         query = st.text_area("✍️ Escribe tu pregunta legal:")
 
+        reading_level = st.selectbox("🗣️ Selecciona el nivel de comprensión lectora:", [
+            "Básico (lenguaje sencillo)",
+            "Intermedio (estilo ciudadano)",
+            "Avanzado (técnico jurídico)"
+        ])
+
         if st.button("Consultar") and query.strip():
             with st.spinner("Consultando la Constitución..."):
-                answer, sources = ask_constitution(query, selected_domain)
+                answer, sources = ask_constitution(query, selected_domain, reading_level)
                 st.markdown("### 🧾 Respuesta:")
                 st.write(answer)
 
@@ -127,3 +139,4 @@ if user_api_key:
         st.error(f"❌ Error al inicializar el modelo: {str(e)}")
 else:
     st.warning("Por favor ingresa tu API key para comenzar.")
+
