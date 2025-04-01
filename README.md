@@ -1,25 +1,78 @@
+
 # 🧠 LegalSmart – Constitutional Legal Assistant
 
-LegalSmart is a multilingual AI assistant designed to help users understand the **Constitution of Ecuador** through **semantically grounded, hallucination-free** responses. It uses vector search and LLM prompting to provide clear legal answers across different languages and reading levels.
+**LegalSmart** is a multilingual, AI-powered legal assistant designed to make the **Constitution of Ecuador** accessible to all — in **Spanish, English, and Kichwa**. It leverages **semantic search, reading-level adaptation, and prompt engineering** to provide accurate, grounded legal answers.
 
 ---
 
-## 📌 What This Code Does
+## 📌 Project Workflow Overview
 
-- Loads and parses articles from the Ecuadorian Constitution (JSON format)
-- Splits them into vector chunks using HuggingFace multilingual embeddings
-- Stores and retrieves content using FAISS (vector similarity search)
-- Accepts user questions via a Streamlit interface
-- Dynamically constructs a **few-shot prompt** with real constitutional context
-- Uses **Google Gemini Pro** to generate accurate, tone-adjusted legal responses
-- Adapts the full experience (UI + LLM output) to **Spanish**, **English**, or **Kichwa**
+### 1️⃣ Article Categorization into JSON  
+The raw constitutional data is first processed and **categorized into legal domains** such as:
+
+- Fundamental Rights  
+- Labor Law  
+- Environmental Law  
+- Business & Economy  
+- Justice & Legal Process  
+- Digital Rights & Privacy
+
+Each article is saved in a structured JSON format:
+```json
+{
+  "article_number": "45",
+  "text": "Children and adolescents are entitled to ...",
+  "domains": ["Fundamental Rights", "Children"]
+}
+```
+
+→ Saved as: `ecuadorian_constitution_articles_multilabel.json`
+
+---
+
+### 2️⃣ Text Chunking & Vectorization
+
+To support semantic search, articles are **split into chunks**, embedded, and stored in a FAISS vectorstore.
+
+```python
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=100
+)
+```
+
+#### Why these values?
+
+- **chunk_size = 500**  
+  Provides rich enough context for legal meaning without overwhelming the embedding model. Balances detail and performance.
+
+- **chunk_overlap = 100**  
+  Ensures important content at the end of one chunk isn't lost between splits. Preserves continuity across chunk boundaries.
+
+```python
+embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
+vectorstore = FAISS.from_documents(documents, embedding_model)
+vectorstore.save_local("constitution_vectorstore")
+```
+
+---
+
+## 🔎 Legal Q&A Pipeline
+
+1. The user inputs a legal question via the **Streamlit interface**.
+2. The system retrieves the **top 3 most relevant chunks** using FAISS.
+3. These are injected into a **dynamic prompt**, along with:
+   - The selected reading complexity (basic, intermediate, advanced)
+   - The preferred language (Spanish, English, Kichwa)
+4. The prompt is sent to **Google Gemini Pro**, which generates a context-based answer.
+5. The complete articles referenced are shown for transparency.
 
 ---
 
 ## 🧠 Prompt Engineering Techniques
 
 ### ✅ Few-Shot Prompting
-Sample legal Q&A examples are embedded directly into the prompt:
+Includes hardcoded legal Q&A examples to guide the model:
 ```text
 PREGUNTA: ¿Qué derechos tienen los niños en Ecuador?
 RESPUESTA:
@@ -27,26 +80,22 @@ Según el Artículo 45 de la Constitución del Ecuador...
 ```
 
 ### ✅ Contextual Injection
-Top 3 most relevant chunks are retrieved and inserted into the prompt:
 ```python
 context = "\n\n".join([
-    f"Artículo: {doc.metadata.get('article_number')}\nDominio: {', '.join(doc.metadata.get('domains', []))}\nContenido: {doc.page_content}"
-    for doc in relevant_docs
+  f"Artículo: {doc.metadata['article_number']}\nDominio: {', '.join(doc.metadata['domains'])}\nContenido: {doc.page_content}"
 ])
 ```
 
-### ✅ Tone Conditioning
-Prompt tone is adjusted based on user reading level:
+### ✅ Reading-Level Conditioning
+Prompt tone is adapted based on user selection:
 ```python
-tone_instruction = {
-    "Básico": "Responde como si hablaras con un estudiante de colegio...",
-    "Intermedio": "Responde como si explicaras a un ciudadano común...",
-    "Avanzado": "Responde con precisión jurídica..."
-}
+"Básico": "Explícate como si hablaras con un estudiante.",
+"Intermedio": "Habla con claridad como a un ciudadano promedio.",
+"Avanzado": "Usa lenguaje técnico jurídico y preciso."
 ```
 
 ### ✅ Hallucination Mitigation
-If no relevant legal context is found, the system returns a controlled message:
+If no chunks are found, the model doesn't guess:
 ```python
 if not relevant_docs:
     return "No relevant constitutional information was found to answer this question.", []
@@ -54,44 +103,40 @@ if not relevant_docs:
 
 ---
 
-## 🌐 Multilingual Support
+## 🌐 Multilingual & Inclusive
 
-The full interface and AI-generated answers are localized into:
+Supports both interface and AI output in:
 - 🇪🇸 Spanish
 - 🇬🇧 English
 - 🇪🇨 Kichwa (Quechua)
 
-```python
-lang = st.selectbox("🌐 Language", ["Español", "English", "Kichwa"])
-t = translations[lang]
-st.title(t["title"])
-```
+With tone customization from plain language to legal professional.
 
 ---
 
-## ⚙️ Technologies Used
+## ⚙️ Tech Stack
 
-- `Streamlit` – Web interface
-- `Langchain` – Vector store abstraction
-- `HuggingFace Embeddings` – Multilingual sentence transformer (`intfloat/multilingual-e5-base`)
-- `FAISS` – Fast similarity search
-- `Google Gemini Pro` – LLM for generation
+| Component        | Tool                                  |
+|------------------|---------------------------------------|
+| UI               | Streamlit                             |
+| Embeddings       | HuggingFace `multilingual-e5-base`    |
+| Vector Search    | FAISS                                 |
+| LLM              | Google Gemini Pro                     |
+| Legal Data       | Categorized JSON articles             |
 
 ---
 
-## ✅ Most Relevant Code Entry Point
+## ✅ Core Function
 
 ```python
 def ask_constitution(query, domain_filter=None, reading_level="Intermedio"):
     relevant_docs = search_constitution(query, domain_filter)
 
     if not relevant_docs:
-        return t["no_context_warning"], []
+        return fallback_response, []
 
-    context = ...
     prompt = f"""
-Eres un asistente legal entrenado en la Constitución del Ecuador.
-{tone_instruction[reading_level][lang]}
+Eres un asistente legal entrenado...
 {context}
 PREGUNTA: {query}
 """
@@ -101,15 +146,20 @@ PREGUNTA: {query}
 
 ---
 
-## 📁 Files
-- `app.py` – main Streamlit app
-- `constitution_vectorstore/` – FAISS index + metadata
-- `ecuadorian_constitution_articles_multilabel.json` – source data
+## 📁 Key Files
+
+| File | Description |
+|------|-------------|
+| `app.py` | Main Streamlit app |
+| `ecuadorian_constitution_articles_multilabel.json` | Categorized articles |
+| `constitution_vectorstore/` | Vector index & metadata |
+| `README.md` | Project summary and structure |
 
 ---
 
-## 🔒 Note
-Users must input their **Google Gemini API key** for generation:
+## 🔐 API Use
+
+Users are prompted to enter their own **Google Gemini API key**:
 ```python
 user_api_key = st.text_input("API key", type="password")
 genai.configure(api_key=user_api_key)
@@ -118,4 +168,6 @@ genai.configure(api_key=user_api_key)
 ---
 
 ## 📬 Contact
-Built for LegalSmart (Ecuador). For collaborations or questions, reach out on LinkedIn or GitHub.
+
+Built by LegalSmart (Ecuador 🇪🇨)  
+For feedback, contributions, or expansion to other constitutions, reach out on LinkedIn or GitHub.
