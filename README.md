@@ -103,14 +103,45 @@ if not relevant_docs:
 
 ---
 
+
 ## 🌐 Multilingual & Inclusive
 
-Supports both interface and AI output in:
+LegalSmart supports both the **interface** and **AI-generated responses** in:
+
 - 🇪🇸 Spanish
 - 🇬🇧 English
 - 🇪🇨 Kichwa (Quechua)
 
-With tone customization from plain language to legal professional.
+### 🔤 How Language Switching Works
+A language selector is shown at the top of the Streamlit interface:
+```python
+lang = st.selectbox("🌐 Language", ["Español", "English", "Kichwa"])
+t = translations[lang]
+```
+The variable `t` maps all interface labels (titles, prompts, buttons) to the selected language. It also determines the **language of the LLM response**, by formatting the prompt and instructions accordingly.
+
+---
+
+## 🗣️ Reading-Level Adaptation
+
+Users can select the **complexity level** for the AI's answer:
+
+- 🟢 Básico (plain language, no jargon)
+- 🟡 Intermedio (citizen-level explanation)
+- 🔵 Avanzado (technical legal precision)
+
+### ✏️ How Tone Adaptation Works
+When composing the prompt for Gemini, the assistant includes level-specific tone instructions:
+
+```python
+tone_instruction = {
+    "Básico": "Explain like you're talking to a student. Use simple words.",
+    "Intermedio": "Explain clearly and without legal jargon.",
+    "Avanzado": "Use formal legal terminology and technical language."
+}
+```
+
+These instructions are **dynamically inserted** into the prompt sent to the model to ensure that responses match the user’s reading preference.
 
 ---
 
