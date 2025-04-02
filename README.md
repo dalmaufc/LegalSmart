@@ -80,19 +80,13 @@ Según el Artículo 45 de la Constitución del Ecuador...
 ```
 
 ### ✅ Contextual Injection
+Relevant constitutional excerpts into the prompt to ground the model’s response in real legal context.
 ```python
 context = "\n\n".join([
   f"Artículo: {doc.metadata['article_number']}\nDominio: {', '.join(doc.metadata['domains'])}\nContenido: {doc.page_content}"
 ])
 ```
 
-### ✅ Reading-Level Conditioning
-Prompt tone is adapted based on user selection:
-```python
-"Básico": "Explícate como si hablaras con un estudiante.",
-"Intermedio": "Habla con claridad como a un ciudadano promedio.",
-"Avanzado": "Usa lenguaje técnico jurídico y preciso."
-```
 
 ### ✅ Hallucination Mitigation
 If no chunks are found, the model doesn't guess:
