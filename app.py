@@ -157,7 +157,7 @@ if user_api_key:
             results_with_scores = search_constitution_with_scores(query, domain_filter)
         
             # Umbral de corte: menor a este valor = sí es relevante
-            SIMILARITY_THRESHOLD = 0.35
+            SIMILARITY_THRESHOLD = 0.4
         
             if not results_with_scores:
                 return (
