@@ -32,7 +32,12 @@ translations = {
         "api_warning": "Por favor ingresa tu API key para comenzar.",
         "no_query": "Escribe una pregunta legal y selecciona el dominio para comenzar.",
         "consulting": "Consultando la Constitución...",
-        "not_found": "⚠️ Artículo no encontrado en el JSON."
+        "not_found": "⚠️ Artículo no encontrado en el JSON.",
+        "reading_levels": [
+            "Básico (lenguaje sencillo)",
+            "Intermedio (estilo ciudadano)",
+            "Avanzado (técnico jurídico)"
+        ]
     },
     "English": {
         "title": "🧠 Constitutional Legal Assistant 🇪🇨",
@@ -44,7 +49,12 @@ translations = {
         "api_warning": "Please enter your API key to continue.",
         "no_query": "Write a legal question and select a domain to start.",
         "consulting": "Consulting the Constitution...",
-        "not_found": "⚠️ Article not found in the JSON."
+        "not_found": "⚠️ Article not found in the JSON.",
+        "reading_levels": [
+            "Basic (simple language)",
+            "Intermediate (citizen style)",
+            "Advanced (legal technical)"
+        ]
     },
     "Kichwa": {
         "title": "🧠 Shuk Yachachik Kamachikmanta 🇪🇨",
@@ -56,7 +66,12 @@ translations = {
         "api_warning": "API key-yki killkakushka kachunmi.",
         "no_query": "Tapuyta killkayki kachunmi, chaymanta kamachikta akllay.",
         "consulting": "Kamachikta maskachik...",
-        "not_found": "⚠️ Ñawpakunapi ruray mana taripushkachu."
+        "not_found": "⚠️ Ñawpakunapi ruray mana taripushkachu.",
+        "reading_levels": [
+            "Shutilla rimay (wawakunapa yachachina)",
+            "Markapi runakunaman (suma yachachina)",
+            "Hatun kamachik rimay (jurídico técnico)"
+        ]
     }
 }
 
@@ -166,11 +181,8 @@ PREGUNTA: {query}
         ])
         query = st.text_area(t["prompt_input"])
 
-        reading_level = st.selectbox(t["level_label"], [
-            "Básico (lenguaje sencillo)",
-            "Intermedio (estilo ciudadano)",
-            "Avanzado (técnico jurídico)"
-        ])
+        reading_level = st.selectbox(t["level_label"], t["reading_levels"])
+
 
         if st.button("Consultar") and query.strip():
             with st.spinner(t["consulting"]):
