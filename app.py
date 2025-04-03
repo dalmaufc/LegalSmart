@@ -205,10 +205,20 @@ PREGUNTA: {query}
             response = model.generate_content(prompt)
             return response.text.strip(), relevant_docs
 
-        selected_domain = st.selectbox(t["domain_label"], [
-            "Todos", "Derechos Fundamentales", "Derecho Laboral", "Derecho Ambiental",
-            "Negocios y Economía", "Justicia y Proceso Legal", "Otro / No Clasificado"
-        ])
+        # Traducción de dominios para mostrar al usuario
+        domain_translations = t["domain_options"]
+        translated_domains = list(domain_translations.values())
+        
+        # Mapa inverso: para obtener el nombre real en español desde la opción traducida
+        reverse_domain_map = {v: k for k, v in domain_translations.items()}
+        
+        # Selector visible traducido
+        selected_domain_translated = st.selectbox(t["domain_label"], translated_domains)
+        
+        # Dominio real en español (para filtrar correctamente en FAISS)
+        selected_domain = reverse_domain_map[selected_domain_translated]
+
+        
         query = st.text_area(t["prompt_input"])
 
         reading_level = st.selectbox(t["level_label"], t["reading_levels"])
