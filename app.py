@@ -155,10 +155,22 @@ if user_api_key:
 
         def ask_constitution(query, domain_filter=None, reading_level="Intermedio (estilo ciudadano)"):
             results_with_scores = search_constitution_with_scores(query, domain_filter)
-            # Establecer un umbral mínimo de similitud (menor es más similar)
+        
+            # Umbral de corte: menor a este valor = sí es relevante
             SIMILARITY_THRESHOLD = 0.6
-            
-            if not results_with_scores or results_with_scores[0][1] > SIMILARITY_THRESHOLD:
+        
+            if not results_with_scores:
+                return (
+                    {
+                        "Español": "❌ No se encontró ningún contenido constitucional relacionado.",
+                        "English": "❌ No constitutional content found.",
+                        "Kichwa": "❌ Mana kamachik ruraykuna taripushkachu."
+                    }[lang],
+                    []
+                )
+        
+            top_score = results_with_scores[0][1]
+            if top_score > SIMILARITY_THRESHOLD:
                 return (
                     {
                         "Español": "⚠️ La pregunta no parece estar relacionada con la Constitución del Ecuador. Reformúlala para enfocarte en derechos, deberes, instituciones o leyes constitucionales.",
@@ -167,9 +179,10 @@ if user_api_key:
                     }[lang],
                     []
                 )
-            
-            # Extraer solo los documentos relevantes si pasa el filtro
+        
+            # Extraer documentos válidos
             relevant_docs = [doc for doc, score in results_with_scores]
+
 
 
             if not relevant_docs:
