@@ -134,6 +134,9 @@ if user_api_key:
             return docs
             
         # Mapeo inverso: de traducción → valor original en español
+
+        reading_level = st.selectbox(t["level_label"], t["reading_levels"])
+
         reading_level_map = {
             "Basic (simple language)": "Básico (lenguaje sencillo)",
             "Intermediate (citizen style)": "Intermedio (estilo ciudadano)",
