@@ -24,7 +24,6 @@ The raw constitutional data is first processed and **categorized into legal doma
 - Environmental Law  
 - Business & Economy  
 - Justice & Legal Process  
-- Digital Rights & Privacy
 
 Each article is saved in a structured JSON format:
 ```json
