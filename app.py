@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pickle
 import faiss
@@ -11,8 +12,13 @@ import json
 st.set_page_config(page_title="🧠 LegalSmart", layout="centered")
 
 # === CARGAR ARTÍCULOS COMPLETOS DESDE JSON ===
-with open("ecuadorian_constitution_articles_multilabel.json", "r", encoding="utf-8") as f:
-    full_articles = json.load(f)
+@st.cache_data
+def load_articles():
+    with open("ecuadorian_constitution_articles_multilabel.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+full_articles = load_articles()
+
 
 # === TRADUCCIONES UI ===
 translations = {
@@ -26,7 +32,21 @@ translations = {
         "api_warning": "Por favor ingresa tu API key para comenzar.",
         "no_query": "Escribe una pregunta legal y selecciona el dominio para comenzar.",
         "consulting": "Consultando la Constitución...",
-        "not_found": "⚠️ Artículo no encontrado en el JSON."
+        "not_found": "⚠️ Artículo no encontrado en el JSON.",
+        "reading_levels": [
+            "Básico (lenguaje sencillo)",
+            "Intermedio (estilo ciudadano)",
+            "Avanzado (técnico jurídico)"
+        ],
+        "domain_options": {
+        "Todos": "Todos",
+        "Derechos Fundamentales": "Derechos Fundamentales",
+        "Derecho Laboral": "Derecho Laboral",
+        "Derecho Ambiental": "Derecho Ambiental",
+        "Negocios y Economía": "Negocios y Economía",
+        "Justicia y Proceso Legal": "Justicia y Proceso Legal",
+        "Otro / No Clasificado": "Otro / No Clasificado"
+        }
     },
     "English": {
         "title": "🧠 Constitutional Legal Assistant 🇪🇨",
@@ -38,7 +58,21 @@ translations = {
         "api_warning": "Please enter your API key to continue.",
         "no_query": "Write a legal question and select a domain to start.",
         "consulting": "Consulting the Constitution...",
-        "not_found": "⚠️ Article not found in the JSON."
+        "not_found": "⚠️ Article not found in the JSON.",
+        "reading_levels": [
+            "Basic (simple language)",
+            "Intermediate (citizen style)",
+            "Advanced (legal technical)"
+        ],
+        "domain_options": {
+        "Todos": "All",
+        "Derechos Fundamentales": "Fundamental Rights",
+        "Derecho Laboral": "Labor Law",
+        "Derecho Ambiental": "Environmental Law",
+        "Negocios y Economía": "Business & Economy",
+        "Justicia y Proceso Legal": "Justice & Legal Process",
+        "Otro / No Clasificado": "Other / Unclassified"
+        }
     },
     "Kichwa": {
         "title": "🧠 Shuk Yachachik Kamachikmanta 🇪🇨",
@@ -50,7 +84,21 @@ translations = {
         "api_warning": "API key-yki killkakushka kachunmi.",
         "no_query": "Tapuyta killkayki kachunmi, chaymanta kamachikta akllay.",
         "consulting": "Kamachikta maskachik...",
-        "not_found": "⚠️ Ñawpakunapi ruray mana taripushkachu."
+        "not_found": "⚠️ Ñawpakunapi ruray mana taripushkachu.",
+        "reading_levels": [
+            "Shutilla rimay (wawakunapa yachachina)",
+            "Markapi runakunaman (suma yachachina)",
+            "Hatun kamachik rimay (jurídico técnico)"
+        ],
+        "domain_options": {
+        "Todos": "Tukuy",
+        "Derechos Fundamentales": "Yuyay kawsaykuna",
+        "Derecho Laboral": "Llakita ruray kamachik",
+        "Derecho Ambiental": "Kawsaypacha kamachik",
+        "Negocios y Economía": "Ruraykuna chaskinakuy",
+        "Justicia y Proceso Legal": "Justicia rimaykunata kamachik",
+        "Otro / No Clasificado": "Shuk / Mana rikuchishka"
+        }
     }
 }
 
@@ -69,15 +117,32 @@ if user_api_key:
         genai.configure(api_key=user_api_key)
         model = genai.GenerativeModel("models/gemini-1.5-flash", generation_config={"temperature": 0.9})
 
-        embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
-        vectorstore = FAISS.load_local("constitution_vectorstore", embedding_model, allow_dangerous_deserialization=True)
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+        @st.cache_resource
+        def load_vectorstore():
+            embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
+            vectorstore = FAISS.load_local("constitution_vectorstore", embedding_model, allow_dangerous_deserialization=True)
+            return vectorstore
+
 
         def search_constitution(query, domain_filter=None):
             docs = retriever.get_relevant_documents(query)
             if domain_filter and domain_filter != "Todos":
                 docs = [doc for doc in docs if domain_filter in doc.metadata.get("domains", [])]
             return docs
+            
+        # Mapeo inverso: de traducción → valor original en español
+
+
+        
+        reading_level_map = {
+            "Basic (simple language)": "Básico (lenguaje sencillo)",
+            "Intermediate (citizen style)": "Intermedio (estilo ciudadano)",
+            "Advanced (legal technical)": "Avanzado (técnico jurídico)",
+            "Shutilla rimay (wawakunapa yachachina)": "Básico (lenguaje sencillo)",
+            "Markapi runakunaman (suma yachachina)": "Intermedio (estilo ciudadano)",
+            "Hatun kamachik rimay (jurídico técnico)": "Avanzado (técnico jurídico)"
+        }
+        
 
         def ask_constitution(query, domain_filter=None, reading_level="Intermedio (estilo ciudadano)"):
             relevant_docs = search_constitution(query, domain_filter)
@@ -99,7 +164,7 @@ if user_api_key:
 
             tone_instruction = {
                 "Básico (lenguaje sencillo)": {
-                    "Español": "Responde como si hablaras con un estudiante de colegio. Usa palabras simples (sin saludar).",
+                    "Español": "Responde como si hablaras con un estudiante de colegio. Usa palabras simples.",
                     "English": "Reply as if you're speaking to a high school student. Use simple words.",
                     "Kichwa": "Yachachik warmikunawan rimanakama kanki. Rimaykuna llakikuna kachun."
                 },
@@ -148,21 +213,50 @@ PREGUNTA: {query}
             response = model.generate_content(prompt)
             return response.text.strip(), relevant_docs
 
-        selected_domain = st.selectbox(t["domain_label"], [
-            "Todos", "Derechos Fundamentales", "Derecho Laboral", "Derecho Ambiental",
-            "Negocios y Economía", "Justicia y Proceso Legal", "Otro / No Clasificado"
-        ])
+        # Traducción de dominios para mostrar al usuario
+        domain_translations = t["domain_options"]
+        translated_domains = list(domain_translations.values())
+        
+        # Mapa inverso: para obtener el nombre real en español desde la opción traducida
+        reverse_domain_map = {v: k for k, v in domain_translations.items()}
+
+        # Selector visible traducido
+        selected_domain_translated = st.selectbox(t["domain_label"], translated_domains)
+        
+        # Dominio real en español (para filtrar correctamente en FAISS)
+        selected_domain = reverse_domain_map[selected_domain_translated]
+        
         query = st.text_area(t["prompt_input"])
 
-        reading_level = st.selectbox(t["level_label"], [
-            "Básico (lenguaje sencillo)",
-            "Intermedio (estilo ciudadano)",
-            "Avanzado (técnico jurídico)"
-        ])
+        reading_level = st.selectbox(
+            t["level_label"],
+            t["reading_levels"],
+            key="reading_level_select"
+        )
+
+        reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
+
+        # Etiqueta dinámica para el slider según idioma
+        slider_labels = {
+            "Español": "🔍 Búsqueda de artículos relevantes:",
+            "English": "🔍 Relevant articles to consider:",
+            "Kichwa": "🔍 Ruraykunata maskaykuna:"
+        }
+        slider_label = slider_labels.get(lang, "🔍 Búsqueda de artículos relevantes:")
+
+
+        # Slider para seleccionar la cantidad de artículos relevantes a usar (k)
+        k_value = st.slider(slider_label, min_value=1, max_value=8, value=4)
+       
+        # Cargar vectorstore y definir retriever con el valor de k seleccionado
+        vectorstore = load_vectorstore()
+        retriever = vectorstore.as_retriever(search_kwargs={"k": k_value})
+
+
 
         if st.button("Consultar") and query.strip():
             with st.spinner(t["consulting"]):
-                answer, sources = ask_constitution(query, selected_domain, reading_level)
+                answer, sources = ask_constitution(query, selected_domain, reading_level_es)
                 st.markdown(t["answer_title"])
                 st.write(answer)
 
@@ -182,6 +276,9 @@ PREGUNTA: {query}
             st.info(t["no_query"])
 
     except Exception as e:
+        st.error(f"❌ Error: {str(e)}")
+else:
+    st.warning(t["api_warning"])
         st.error(f"❌ Error: {str(e)}")
 else:
     st.warning(t["api_warning"])
