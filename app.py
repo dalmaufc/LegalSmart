@@ -70,9 +70,15 @@ if user_api_key:
         genai.configure(api_key=user_api_key)
         model = genai.GenerativeModel("models/gemini-1.5-flash", generation_config={"temperature": 0.9})
 
-        embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
-        vectorstore = FAISS.load_local("constitution_vectorstore", embedding_model, allow_dangerous_deserialization=True)
+        @st.cache_resource
+        def load_vectorstore():
+            embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-base")
+            vectorstore = FAISS.load_local("constitution_vectorstore", embedding_model, allow_dangerous_deserialization=True)
+            return vectorstore
+
+        vectorstore = load_vectorstore()
         retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
 
         def search_constitution(query, domain_filter=None):
             docs = retriever.get_relevant_documents(query)
