@@ -132,11 +132,12 @@ if user_api_key:
             return vectorstore
 
 
-        def search_constitution(query, domain_filter=None):
-            docs = retriever.get_relevant_documents(query)
+        def search_constitution_with_scores(query, domain_filter=None):
+            results = retriever.vectorstore.similarity_search_with_score(query, k=k_value)
             if domain_filter and domain_filter != "Todos":
-                docs = [doc for doc in docs if domain_filter in doc.metadata.get("domains", [])]
-            return docs
+                results = [(doc, score) for doc, score in results if domain_filter in doc.metadata.get("domains", [])]
+            return results
+
             
         # Mapeo inverso: de traducción → valor original en español
 
@@ -153,7 +154,23 @@ if user_api_key:
         
 
         def ask_constitution(query, domain_filter=None, reading_level="Intermedio (estilo ciudadano)"):
-            relevant_docs = search_constitution(query, domain_filter)
+            results_with_scores = search_constitution_with_scores(query, domain_filter)
+            # Establecer un umbral mínimo de similitud (menor es más similar)
+            SIMILARITY_THRESHOLD = 0.6
+            
+            if not results_with_scores or results_with_scores[0][1] > SIMILARITY_THRESHOLD:
+                return (
+                    {
+                        "Español": "⚠️ La pregunta no parece estar relacionada con la Constitución del Ecuador. Reformúlala para enfocarte en derechos, deberes, instituciones o leyes constitucionales.",
+                        "English": "⚠️ Your question does not seem related to the Constitution of Ecuador. Please rephrase it to focus on rights, duties, institutions, or constitutional laws.",
+                        "Kichwa": "⚠️ Kay tapuyka mana mama llakta kamachikwan rikuchishkachu. Ama shukmanta ruraykichi, kawsaykuna, kamachik, instituciones shukkunawan."
+                    }[lang],
+                    []
+                )
+            
+            # Extraer solo los documentos relevantes si pasa el filtro
+            relevant_docs = [doc for doc, score in results_with_scores]
+
 
             if not relevant_docs:
                 return (
