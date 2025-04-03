@@ -123,9 +123,6 @@ if user_api_key:
             vectorstore = FAISS.load_local("constitution_vectorstore", embedding_model, allow_dangerous_deserialization=True)
             return vectorstore
 
-        vectorstore = load_vectorstore()
-        retriever = vectorstore.as_retriever(search_kwargs={"k": k_value})
-
 
         def search_constitution(query, domain_filter=None):
             docs = retriever.get_relevant_documents(query)
@@ -241,6 +238,9 @@ PREGUNTA: {query}
 
         # Slider para seleccionar la cantidad de artículos relevantes a usar (k)
         k_value = st.slider("🔍 Cantidad de artículos relevantes a usar (k):", min_value=1, max_value=10, value=5)
+
+        retriever = vectorstore.as_retriever(search_kwargs={"k": k_value})
+        vectorstore = load_vectorstore()
 
 
 
