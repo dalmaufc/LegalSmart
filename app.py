@@ -37,7 +37,7 @@ translations = {
             "Básico (lenguaje sencillo)",
             "Intermedio (estilo ciudadano)",
             "Avanzado (técnico jurídico)"
-        ]
+        ],
         "domain_options": {
         "Todos": "Todos",
         "Derechos Fundamentales": "Derechos Fundamentales",
@@ -64,7 +64,7 @@ translations = {
             "Basic (simple language)",
             "Intermediate (citizen style)",
             "Advanced (legal technical)"
-        ]
+        ],
         "domain_options": {
         "Todos": "All",
         "Derechos Fundamentales": "Fundamental Rights",
@@ -91,7 +91,7 @@ translations = {
             "Shutilla rimay (wawakunapa yachachina)",
             "Markapi runakunaman (suma yachachina)",
             "Hatun kamachik rimay (jurídico técnico)"
-        ]
+        ],
         "domain_options": {
         "Todos": "Tukuy",
         "Derechos Fundamentales": "Yuyay kawsaykuna",
