@@ -108,14 +108,14 @@ translations = {
 lang = st.selectbox("🌐 Idioma / Language / Runashimi:", ["Español", "English", "Kichwa"])
 t = translations[lang]
 
-# === LOGO DESDE GITHUB ===
-st.image(
-    "https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador.png",
-    width=250
-)
+# === LOGO Y TÍTULO CENTRADO ===
+st.markdown(f"""
+<div style='text-align: center;'>
+    <img src='https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador.png' width='200'>
+    <h2 style='margin-top: 10px;'>{t['title'].replace('🧠 ', '')}</h2>
+</div>
+""", unsafe_allow_html=True)
 
-# === TÍTULO SIN EMOJI ===
-st.markdown(f"## {t['title'].replace('🧠 ', '')}")
 
 # === INPUT CLAVE API ===
 user_api_key = st.text_input("🔐 API key de Gemini / Gemini API key:", type="password")
