@@ -25,7 +25,7 @@ full_articles = load_articles()
 # === TRADUCCIONES UI ===
 translations = {
     "Español": {
-        "title": "🧠 Asistente Legal Constitucional 🇪🇨",
+        "title": "🧠 Asistente Legal Constitucional",
         "prompt_input": "✍️ Escribe tu pregunta legal:",
         "domain_label": "Selecciona el dominio legal:",
         "level_label": "🗣️ Selecciona el nivel de comprensión lectora:",
@@ -51,7 +51,7 @@ translations = {
         }
     },
     "English": {
-        "title": "🧠 Constitutional Legal Assistant 🇪🇨",
+        "title": "🧠 Constitutional Legal Assistant",
         "prompt_input": "✍️ Write your legal question:",
         "domain_label": "Select the legal domain:",
         "level_label": "🗣️ Select your reading level:",
@@ -77,7 +77,7 @@ translations = {
         }
     },
     "Kichwa": {
-        "title": "🧠 Shuk Yachachik Kamachikmanta 🇪🇨",
+        "title": "🧠 Shuk Yachachik Kamachikmanta",
         "prompt_input": "✍️ Kikinka ñawpa tapuyta willakichik:",
         "domain_label": "Kamachik mashi ruraykunata akllay:",
         "level_label": "🗣️ Ñawpakunapa yachay kallpata akllay:",
@@ -111,7 +111,7 @@ t = translations[lang]
 # === LOGO Y TÍTULO CENTRADO ===
 st.markdown(f"""
 <div style='text-align: center;'>
-    <img src='https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador.png' width='200'>
+    <img src='https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador1.png' width='200'>
     <h2 style='margin-top: 10px;'>{t['title'].replace('🧠 ', '')}</h2>
 </div>
 """, unsafe_allow_html=True)
