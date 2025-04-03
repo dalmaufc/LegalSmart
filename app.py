@@ -9,8 +9,6 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import google.generativeai as genai
 import json
 
-st.session_state["debug"] = st.sidebar.checkbox("🔍 Modo debug", value=False)
-
 
 # === CONFIGURAR PÁGINA ANTES DE NADA ===
 st.set_page_config(page_title="🇪🇨 LegalSmart", layout="centered")
@@ -172,8 +170,6 @@ if user_api_key:
                 )
         
             top_score = results_with_scores[0][1]
-            if "debug" in st.session_state and st.session_state["debug"]:
-                st.write(f"🧪 Similitud de la mejor coincidencia: {top_score:.4f}")
             
             if top_score > SIMILARITY_THRESHOLD:
                 return (
