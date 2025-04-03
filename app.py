@@ -279,6 +279,3 @@ PREGUNTA: {query}
         st.error(f"❌ Error: {str(e)}")
 else:
     st.warning(t["api_warning"])
-        st.error(f"❌ Error: {str(e)}")
-else:
-    st.warning(t["api_warning"])
