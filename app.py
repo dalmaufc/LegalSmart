@@ -172,8 +172,8 @@ if user_api_key:
 
             tone_instruction = {
                 "Básico (lenguaje sencillo)": {
-                    "Español": "Responde como si hablaras con un estudiante de colegio. Usa palabras simples. (No saludar)",
-                    "English": "Reply as if you're speaking to a high school student. Use simple words.(Skip greetings)",
+                    "Español": "Responde como si hablaras con un estudiante de colegio. Usa palabras simples.",
+                    "English": "Reply as if you're speaking to a high school student. Use simple words.",
                     "Kichwa": "Yachachik warmikunawan rimanakama kanki. Rimaykuna llakikuna kachun."
                 },
                 "Intermedio (estilo ciudadano)": {
@@ -192,6 +192,8 @@ if user_api_key:
 Eres un asistente legal entrenado en la Constitución del Ecuador.
 
 {tone_instruction[reading_level][lang]}
+
+IMPORTANTE: No empieces tu respuesta con saludos ni frases como "Hola", "Ok", o "Claro que sí". Comienza directamente con la explicación legal.
 
 Ejemplos:
 
