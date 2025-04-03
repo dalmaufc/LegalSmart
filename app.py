@@ -124,7 +124,7 @@ if user_api_key:
             return vectorstore
 
         vectorstore = load_vectorstore()
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
 
         def search_constitution(query, domain_filter=None):
