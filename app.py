@@ -38,6 +38,16 @@ translations = {
             "Intermedio (estilo ciudadano)",
             "Avanzado (técnico jurídico)"
         ]
+        "domain_options": {
+        "Todos": "Todos",
+        "Derechos Fundamentales": "Derechos Fundamentales",
+        "Derecho Laboral": "Derecho Laboral",
+        "Derecho Ambiental": "Derecho Ambiental",
+        "Negocios y Economía": "Negocios y Economía",
+        "Justicia y Proceso Legal": "Justicia y Proceso Legal",
+        "Derechos Digitales y Privacidad": "Derechos Digitales y Privacidad",
+        "Otro / No Clasificado": "Otro / No Clasificado"
+        }
     },
     "English": {
         "title": "🧠 Constitutional Legal Assistant 🇪🇨",
@@ -55,6 +65,16 @@ translations = {
             "Intermediate (citizen style)",
             "Advanced (legal technical)"
         ]
+        "domain_options": {
+        "Todos": "All",
+        "Derechos Fundamentales": "Fundamental Rights",
+        "Derecho Laboral": "Labor Law",
+        "Derecho Ambiental": "Environmental Law",
+        "Negocios y Economía": "Business & Economy",
+        "Justicia y Proceso Legal": "Justice & Legal Process",
+        "Derechos Digitales y Privacidad": "Digital Rights & Privacy",
+        "Otro / No Clasificado": "Other / Unclassified"
+        }
     },
     "Kichwa": {
         "title": "🧠 Shuk Yachachik Kamachikmanta 🇪🇨",
@@ -72,6 +92,16 @@ translations = {
             "Markapi runakunaman (suma yachachina)",
             "Hatun kamachik rimay (jurídico técnico)"
         ]
+        "domain_options": {
+        "Todos": "Tukuy",
+        "Derechos Fundamentales": "Yuyay kawsaykuna",
+        "Derecho Laboral": "Llakita ruray kamachik",
+        "Derecho Ambiental": "Kawsaypacha kamachik",
+        "Negocios y Economía": "Ruraykuna chaskinakuy",
+        "Justicia y Proceso Legal": "Justicia rimaykunata kamachik",
+        "Derechos Digitales y Privacidad": "Digital yuyaykuna chinkana",
+        "Otro / No Clasificado": "Shuk / Mana rikuchishka"
+        }
     }
 }
 
