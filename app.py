@@ -132,6 +132,20 @@ if user_api_key:
             if domain_filter and domain_filter != "Todos":
                 docs = [doc for doc in docs if domain_filter in doc.metadata.get("domains", [])]
             return docs
+            
+        # Mapeo inverso: de traducción → valor original en español
+        reading_level_map = {
+            "Basic (simple language)": "Básico (lenguaje sencillo)",
+            "Intermediate (citizen style)": "Intermedio (estilo ciudadano)",
+            "Advanced (legal technical)": "Avanzado (técnico jurídico)",
+            "Shutilla rimay (wawakunapa yachachina)": "Básico (lenguaje sencillo)",
+            "Markapi runakunaman (suma yachachina)": "Intermedio (estilo ciudadano)",
+            "Hatun kamachik rimay (jurídico técnico)": "Avanzado (técnico jurídico)"
+        }
+        
+        # Obtener versión en español del nivel de lectura
+        reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
+
 
         def ask_constitution(query, domain_filter=None, reading_level="Intermedio (estilo ciudadano)"):
             relevant_docs = search_constitution(query, domain_filter)
@@ -220,10 +234,14 @@ PREGUNTA: {query}
 
         reading_level = st.selectbox(t["level_label"], t["reading_levels"])
 
+        # Obtener versión en español del nivel de lectura
+        reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
+
+
 
         if st.button("Consultar") and query.strip():
             with st.spinner(t["consulting"]):
-                answer, sources = ask_constitution(query, selected_domain, reading_level)
+                answer, sources = ask_constitution(query, selected_domain, reading_level_es)
                 st.markdown(t["answer_title"])
                 st.write(answer)
 
