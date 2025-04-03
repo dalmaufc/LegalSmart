@@ -99,7 +99,7 @@ if user_api_key:
 
             tone_instruction = {
                 "Básico (lenguaje sencillo)": {
-                    "Español": "Responde como si hablaras con un estudiante de colegio. Usa palabras simples.",
+                    "Español": "Responde como si hablaras con un estudiante de colegio. Usa palabras simples (sin saludar).",
                     "English": "Reply as if you're speaking to a high school student. Use simple words.",
                     "Kichwa": "Yachachik warmikunawan rimanakama kanki. Rimaykuna llakikuna kachun."
                 },
