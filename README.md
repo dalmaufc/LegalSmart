@@ -76,18 +76,6 @@ vectorstore.save_local("constitution_vectorstore")
 
 ---
 
-## 🔎 Legal Q&A Pipeline
-
-1. The user inputs a legal question via the **Streamlit interface**.
-2. The system retrieves the **top 3 most relevant chunks** using FAISS.
-3. These are injected into a **dynamic prompt**, along with:
-   - The selected reading complexity (basic, intermediate, advanced)
-   - The preferred language (Spanish, English, Kichwa)
-4. The prompt is sent to **Google Gemini Pro**, which generates a context-based answer.
-5. The complete articles referenced are shown for transparency.
-
----
-
 ## 🧠 Prompt Engineering Techniques
 
 ### ✅ Few-Shot Prompting
