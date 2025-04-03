@@ -135,11 +135,7 @@ if user_api_key:
             
         # Mapeo inverso: de traducción → valor original en español
 
-        reading_level = st.selectbox(
-            t["level_label"],
-            t["reading_levels"],
-            key="reading_level_select"
-        )
+
         
         reading_level_map = {
             "Basic (simple language)": "Básico (lenguaje sencillo)",
@@ -150,8 +146,6 @@ if user_api_key:
             "Hatun kamachik rimay (jurídico técnico)": "Avanzado (técnico jurídico)"
         }
         
-        reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
-
 
         def ask_constitution(query, domain_filter=None, reading_level="Intermedio (estilo ciudadano)"):
             relevant_docs = search_constitution(query, domain_filter)
@@ -229,15 +223,23 @@ PREGUNTA: {query}
         # Mapa inverso: para obtener el nombre real en español desde la opción traducida
         reverse_domain_map = {v: k for k, v in domain_translations.items()}
         
+        
+        query = st.text_area(t["prompt_input"])
+
+        reading_level = st.selectbox(
+            t["level_label"],
+            t["reading_levels"],
+            key="reading_level_select"
+        )
+
+        reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
+
+
         # Selector visible traducido
         selected_domain_translated = st.selectbox(t["domain_label"], translated_domains)
         
         # Dominio real en español (para filtrar correctamente en FAISS)
         selected_domain = reverse_domain_map[selected_domain_translated]
-
-        
-        query = st.text_area(t["prompt_input"])
-
 
         if st.button("Consultar") and query.strip():
             with st.spinner(t["consulting"]):
