@@ -222,7 +222,12 @@ PREGUNTA: {query}
         
         # Mapa inverso: para obtener el nombre real en español desde la opción traducida
         reverse_domain_map = {v: k for k, v in domain_translations.items()}
+
+        # Selector visible traducido
+        selected_domain_translated = st.selectbox(t["domain_label"], translated_domains)
         
+        # Dominio real en español (para filtrar correctamente en FAISS)
+        selected_domain = reverse_domain_map[selected_domain_translated]
         
         query = st.text_area(t["prompt_input"])
 
@@ -234,12 +239,6 @@ PREGUNTA: {query}
 
         reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
 
-
-        # Selector visible traducido
-        selected_domain_translated = st.selectbox(t["domain_label"], translated_domains)
-        
-        # Dominio real en español (para filtrar correctamente en FAISS)
-        selected_domain = reverse_domain_map[selected_domain_translated]
 
         if st.button("Consultar") and query.strip():
             with st.spinner(t["consulting"]):
