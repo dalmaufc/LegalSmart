@@ -170,6 +170,8 @@ if user_api_key:
                 )
         
             top_score = results_with_scores[0][1]
+            st.write(f"🧪 Similitud de la mejor coincidencia: {top_score:.4f}")
+            
             if top_score > SIMILARITY_THRESHOLD:
                 return (
                     {
@@ -218,40 +220,49 @@ if user_api_key:
                 }
             }
 
-            prompt = f"""
-Eres un asistente legal entrenado en la Constitución del Ecuador.
+            # Solo generamos respuesta si pasa validación previa
+            if top_score <= SIMILARITY_THRESHOLD:
+                prompt = f"""
+            Eres un asistente legal entrenado en la Constitución del Ecuador.
+            
+            {tone_instruction[reading_level][lang]}
+            
+            IMPORTANTE: No empieces tu respuesta con saludos ni frases como "Hola", "Ok", o "Claro que sí". Comienza directamente con la explicación legal.
+            
+            Ejemplos:
+            
+            PREGUNTA: ¿Qué derechos tienen los niños en Ecuador?
+            RESPUESTA:
+            Según el Artículo 45 de la Constitución del Ecuador, ...
+            
+            PREGUNTA: ¿Puedo ser detenido sin orden judicial en Ecuador?
+            RESPUESTA:
+            El Artículo 77 establece que ...
+            
+            PREGUNTA: ¿Qué derechos tienen los pueblos indígenas sobre sus territorios?
+            RESPUESTA:
+            El Artículo 57 reconoce que ...
+            
+            ---
+            
+            Ahora responde a esta nueva pregunta en {lang.lower()} con base en los siguientes extractos constitucionales:
+            
+            {context}
+            
+            PREGUNTA: {query}
+            """
+                response = model.generate_content(prompt)
+                return response.text.strip(), relevant_docs
+            else:
+                return (
+                    {
+                        "Español": "⚠️ La pregunta no parece estar relacionada con la Constitución del Ecuador. Reformúlala para enfocarte en derechos, deberes, instituciones o leyes constitucionales.",
+                        "English": "⚠️ Your question does not seem related to the Constitution of Ecuador. Please rephrase it to focus on rights, duties, institutions, or constitutional laws.",
+                        "Kichwa": "⚠️ Kay tapuyka mana mama llakta kamachikwan rikuchishkachu. Ama shukmanta ruraykichi, kawsaykuna, kamachik, instituciones shukkunawan."
+                    }[lang],
+                    []
+                )
 
-{tone_instruction[reading_level][lang]}
-
-IMPORTANTE: No empieces tu respuesta con saludos ni frases como "Hola", "Ok", o "Claro que sí". Comienza directamente con la explicación legal.
-
-Ejemplos:
-
-PREGUNTA: ¿Qué derechos tienen los niños en Ecuador?
-RESPUESTA:
-Según el Artículo 45 de la Constitución del Ecuador, los niños, niñas y adolescentes tienen derecho a la integridad física y psíquica; a su identidad, nombre y ciudadanía; a la salud integral y nutrición; a la educación y cultura, al deporte y recreación; a la seguridad social; a tener una familia y disfrutar de la convivencia familiar y comunitaria; a la participación social; al respeto de su libertad y dignidad; y a ser consultados en los asuntos que les conciernen.
-
-PREGUNTA: ¿Puedo ser detenido sin orden judicial en Ecuador?
-RESPUESTA:
-El Artículo 77 establece que ninguna persona puede ser privada de libertad sino por orden de juez competente, excepto en caso de flagrancia. Toda persona detenida debe ser informada inmediatamente de sus derechos y de los motivos de su detención, y tiene derecho a comunicarse con su familia y abogado.
-
-PREGUNTA: ¿Qué derechos tienen los pueblos indígenas sobre sus territorios?
-RESPUESTA:
-El Artículo 57 reconoce que los pueblos indígenas tienen derecho a conservar la posesión ancestral de sus tierras y territorios, a no ser desplazados, y a participar en el uso, usufructo, administración y conservación de los recursos naturales renovables existentes en ellos. Además, deben ser consultados antes de cualquier medida legislativa o administrativa que pueda afectarles.
-
----
-
----
-
-Ahora responde a esta nueva pregunta en {lang.lower()} con base en los siguientes extractos constitucionales:
-
-{context}
-
-PREGUNTA: {query}
-"""
-
-            response = model.generate_content(prompt)
-            return response.text.strip(), relevant_docs
 
         # Traducción de dominios para mostrar al usuario
         domain_translations = t["domain_options"]
