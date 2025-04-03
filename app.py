@@ -25,7 +25,7 @@ full_articles = load_articles()
 # === TRADUCCIONES UI ===
 translations = {
     "Español": {
-        "title": "🧠 Asistente Legal Constitucional",
+        "title": "Asistente Constitucional del Ecuador",
         "prompt_input": "✍️ Escribe tu pregunta legal:",
         "domain_label": "Selecciona el dominio legal:",
         "level_label": "🗣️ Selecciona el nivel de comprensión lectora:",
@@ -51,7 +51,7 @@ translations = {
         }
     },
     "English": {
-        "title": "🧠 Constitutional Legal Assistant",
+        "title": "Constitutional Assistant of Ecuador",
         "prompt_input": "✍️ Write your legal question:",
         "domain_label": "Select the legal domain:",
         "level_label": "🗣️ Select your reading level:",
@@ -77,7 +77,7 @@ translations = {
         }
     },
     "Kichwa": {
-        "title": "🧠 Shuk Yachachik Kamachikmanta",
+        "title": "Ecuador mama llakta Kamachik Yachachik",
         "prompt_input": "✍️ Kikinka ñawpa tapuyta willakichik:",
         "domain_label": "Kamachik mashi ruraykunata akllay:",
         "level_label": "🗣️ Ñawpakunapa yachay kallpata akllay:",
