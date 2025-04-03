@@ -238,9 +238,10 @@ PREGUNTA: {query}
 
         # Slider para seleccionar la cantidad de artículos relevantes a usar (k)
         k_value = st.slider("🔍 Cantidad de artículos relevantes a usar (k):", min_value=1, max_value=10, value=5)
-
-        retriever = vectorstore.as_retriever(search_kwargs={"k": k_value})
+       
+        # Cargar vectorstore y definir retriever con el valor de k seleccionado
         vectorstore = load_vectorstore()
+        retriever = vectorstore.as_retriever(search_kwargs={"k": k_value})
 
 
 
