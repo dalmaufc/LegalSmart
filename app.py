@@ -8,6 +8,8 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import google.generativeai as genai
 import json
 
+
+
 # === CONFIGURAR PÁGINA ANTES DE NADA ===
 st.set_page_config(page_title="🧠 LegalSmart", layout="centered")
 
@@ -106,8 +108,14 @@ translations = {
 lang = st.selectbox("🌐 Idioma / Language / Runashimi:", ["Español", "English", "Kichwa"])
 t = translations[lang]
 
-# === TÍTULO ADAPTADO AL IDIOMA ===
-st.title(t["title"])
+# === LOGO DESDE GITHUB ===
+st.image(
+    "https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador.png",
+    width=250
+)
+
+# === TÍTULO SIN EMOJI ===
+st.markdown(f"## {t['title'].replace('🧠 ', '')}")
 
 # === INPUT CLAVE API ===
 user_api_key = st.text_input("🔐 API key de Gemini / Gemini API key:", type="password")
