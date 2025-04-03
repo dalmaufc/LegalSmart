@@ -162,7 +162,7 @@ PREGUNTA: {query}
 
         selected_domain = st.selectbox(t["domain_label"], [
             "Todos", "Derechos Fundamentales", "Derecho Laboral", "Derecho Ambiental",
-            "Negocios y Economía", "Justicia y Proceso Legal", "Derechos Digitales y Privacidad", "Otro / No Clasificado"
+            "Negocios y Economía", "Justicia y Proceso Legal", "Otro / No Clasificado"
         ])
         query = st.text_area(t["prompt_input"])
 
