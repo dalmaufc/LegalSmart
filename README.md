@@ -66,6 +66,16 @@ vectorstore.save_local("constitution_vectorstore")
 
 ---
 
+## 🔎 Semantic Search & Retrieval
+
+1. User enters a question in the Streamlit interface.
+2. The app retrieves the **top k relevant chunks** (`k` is user-defined with a slider).
+3. Extracted text is injected into a tailored prompt.
+4. Prompt sent to **Gemini Pro** for answer generation.
+5. Full articles used are shown below the answer for transparency.
+
+---
+
 ## 🔎 Legal Q&A Pipeline
 
 1. The user inputs a legal question via the **Streamlit interface**.
@@ -96,6 +106,11 @@ context = "\n\n".join([
 ])
 ```
 
+### ✅ **Instruction Tuning**  
+  Includes this line in the prompt:
+  ```
+  IMPORTANTE: No empieces tu respuesta con saludos...
+  ```
 
 ### ✅ Hallucination Mitigation
 If no chunks are found, the model doesn't guess:
@@ -148,6 +163,15 @@ These instructions are **dynamically inserted** into the prompt sent to the mode
 
 ---
 
+## 🔧 Optimizations
+
+- Uses `@st.cache_data` and `@st.cache_resource` for performance
+- Dynamic slider to choose `k` (1–8) controls how many documents are retrieved
+- Domain filtering via dropdown
+- Gemini API key is securely entered by user
+
+---
+
 ## ⚙️ Tech Stack
 
 | Component        | Tool                                  |
@@ -156,22 +180,25 @@ These instructions are **dynamically inserted** into the prompt sent to the mode
 | Embeddings       | HuggingFace `multilingual-e5-base`    |
 | Vector Search    | FAISS                                 |
 | LLM              | Google Gemini Pro                     |
-| Legal Data       | Categorized JSON articles             |
+| Legal Data       | JSON with multi-domain classification |
 
 ---
 
 ## ✅ Core Function
 
 ```python
-def ask_constitution(query, domain_filter=None, reading_level="Intermedio"):
+def ask_constitution(query, domain_filter, reading_level):
     relevant_docs = search_constitution(query, domain_filter)
-
     if not relevant_docs:
         return fallback_response, []
 
     prompt = f"""
-Eres un asistente legal entrenado...
+{tone_instruction[reading_level]}
+
+IMPORTANTE: No empieces tu respuesta con saludos...
+
 {context}
+
 PREGUNTA: {query}
 """
     response = model.generate_content(prompt)
@@ -203,5 +230,5 @@ genai.configure(api_key=user_api_key)
 
 ## 📬 Contact
 
-Built by LegalSmart (Ecuador 🇪🇨)  
+Built by Feipe Dalmau (Ecuador 🇪🇨)  
 For feedback, contributions, or expansion to other constitutions, reach out on LinkedIn or GitHub.
