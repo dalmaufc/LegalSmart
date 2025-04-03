@@ -12,8 +12,13 @@ import json
 st.set_page_config(page_title="🧠 LegalSmart", layout="centered")
 
 # === CARGAR ARTÍCULOS COMPLETOS DESDE JSON ===
-with open("ecuadorian_constitution_articles_multilabel.json", "r", encoding="utf-8") as f:
-    full_articles = json.load(f)
+@st.cache_data
+def load_articles():
+    with open("ecuadorian_constitution_articles_multilabel.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+full_articles = load_articles()
+
 
 # === TRADUCCIONES UI ===
 translations = {
