@@ -237,7 +237,7 @@ PREGUNTA: {query}
         reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
 
         # Slider para seleccionar la cantidad de artículos relevantes a usar (k)
-        k_value = st.slider("🔍 Cantidad de artículos relevantes a usar (k):", min_value=1, max_value=10, value=5)
+        k_value = st.slider("🔍 Cantidad de artículos relevantes:", min_value=1, max_value=8, value=4)
        
         # Cargar vectorstore y definir retriever con el valor de k seleccionado
         vectorstore = load_vectorstore()
