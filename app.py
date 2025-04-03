@@ -11,7 +11,7 @@ import json
 
 
 # === CONFIGURAR PÁGINA ANTES DE NADA ===
-st.set_page_config(page_title="🧠 LegalSmart", layout="centered")
+st.set_page_config(page_title="🇪🇨 LegalSmart", layout="centered")
 
 # === CARGAR ARTÍCULOS COMPLETOS DESDE JSON ===
 @st.cache_data
