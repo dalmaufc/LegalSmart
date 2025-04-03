@@ -135,8 +135,12 @@ if user_api_key:
             
         # Mapeo inverso: de traducción → valor original en español
 
-        reading_level = st.selectbox(t["level_label"], t["reading_levels"])
-
+        reading_level = st.selectbox(
+            t["level_label"],
+            t["reading_levels"],
+            key="reading_level_select"
+        )
+        
         reading_level_map = {
             "Basic (simple language)": "Básico (lenguaje sencillo)",
             "Intermediate (citizen style)": "Intermedio (estilo ciudadano)",
@@ -146,7 +150,6 @@ if user_api_key:
             "Hatun kamachik rimay (jurídico técnico)": "Avanzado (técnico jurídico)"
         }
         
-        # Obtener versión en español del nivel de lectura
         reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
 
 
@@ -234,12 +237,6 @@ PREGUNTA: {query}
 
         
         query = st.text_area(t["prompt_input"])
-
-        reading_level = st.selectbox(t["level_label"], t["reading_levels"])
-
-        # Obtener versión en español del nivel de lectura
-        reading_level_es = reading_level_map.get(reading_level, "Intermedio (estilo ciudadano)")
-
 
 
         if st.button("Consultar") and query.strip():
