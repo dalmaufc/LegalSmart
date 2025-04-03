@@ -1,7 +1,16 @@
 
-# 🧠 LegalSmart – Constitutional Legal Assistant
+# 🇪🇨 LegalSmart – Constitutional Legal Assistant
 
-**LegalSmart** is a multilingual, AI-powered legal assistant designed to make the **Constitution of Ecuador** accessible to all — in **Spanish, English, and Kichwa**. It leverages **semantic search, reading-level adaptation, and prompt engineering** to provide accurate, grounded legal answers.
+**LegalSmart** is a multilingual, AI-powered legal assistant designed to make the **Constitution of Ecuador** accessible to all — in **Spanish, English, and Kichwa**. It leverages **semantic search, reading-level adaptation, and advanced prompt engineering** to provide accurate, grounded, and transparent legal answers.
+
+---
+
+## 🎯 Objectives
+
+- Democratize access to Ecuador's constitutional rights
+- Adapt legal answers to different literacy levels and languages
+- Ground all AI answers strictly in real constitutional text (no hallucinations)
+- Deliver an interactive, personalized legal assistant experience
 
 ---
 
