@@ -111,7 +111,7 @@ t = translations[lang]
 # === LOGO Y TÍTULO CENTRADO ===
 st.markdown(f"""
 <div style='text-align: center;'>
-    <img src='https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador.png' width='200'>
+    <img src='https://raw.githubusercontent.com/dalmaufc/LegalSmart/main/logos/Constitución-de-la-República-del-Ecuador3.png' width='200'>
     <h2 style='margin-top: 10px;'>{t['title'].replace('🧠 ', '')}</h2>
 </div>
 """, unsafe_allow_html=True)
